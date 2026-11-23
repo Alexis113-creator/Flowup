@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FlowUp - Your Daily System</title>
+<style>
+*{box-sizing:border-box;font-family:Arial,sans-serif}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulseGlow{0%,100%{box-shadow:0 8px 25px rgba(255,0,0,.45)}50%{box-shadow:0 8px 35px rgba(255,0,0,.85)}}
+@keyframes shine{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes floatIn{0%{opacity:0;transform:scale(.95)}100%{opacity:1;transform:scale(1)}}
+@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-2deg)}75%{transform:rotate(2deg)}}
+@keyframes xpGlow{0%,100%{filter:brightness(1)}50%{filter:brightness(1.4)}}
+@keyframes piePop{from{transform:scale(.5) rotate(-90deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+@keyframes pageIn{from{opacity:0;transform:translateX(30px) scale(.98)}to{opacity:1;transform:translateX(0) scale(1)}}
+@keyframes pageOut{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(-20px)}}
+@keyframes slideUpNav{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes badgePop{0%{transform:scale(.5)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
+body{margin:0;color:#fff;padding:16px;padding-bottom:90px;background:#000;background-image:radial-gradient(circle at 50% 0%,#2B0000 0%,#000 55%,#000 100%);background-attachment:fixed;min-height:100vh;transition:background .5s ease}
+.top{display:flex;justify-content:space-between;align-items:center;animation:fadeUp .6s ease}
+.logo{font-weight:900;font-size:28px;letter-spacing:2px;color:#fff;transition:transform .3s ease;cursor:pointer}
+.logo:hover{transform:scale(1.05)}
+.logo span{background:linear-gradient(90deg,#FF0000,#FF4D4D,#FF0000,#fff);background-size:200% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shine 3s linear infinite}
+#page-setup,#page-home,#page-sleep,#page-book{transition:opacity .35s ease, transform .35s ease}
+.page-enter{animation:pageIn .4s ease both}
+.page-exit{animation:pageOut .25s ease both}
+.card{background:#111;border:1px solid #2A0000;border-radius:20px;padding:16px;margin:14px 0;box-shadow:0 10px 30px rgba(255,0,0,.15);animation:fadeUp .6s ease both;transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease}
+.card:hover{transform:translateY(-3px);box-shadow:0 15px 35px rgba(255,0,0,.25);border-color:#FF0000}
+h2{margin:0 0 8px;color:#fff;transition:color .3s ease}
+p{color:#B0B0B0;line-height:1.5;font-size:14px;transition:color .3s ease}
+input{width:100%;padding:13px;border-radius:14px;border:1px solid #333;background:#1A1A1A;color:#fff;margin:6px 0;font-size:15px;outline:none;transition:all .3s ease}
+input:focus{border-color:#FF0000;box-shadow:0 0 0 3px rgba(255,0,0,.25);transform:scale(1.01)}
+input::placeholder{color:#777;transition:color .3s ease}
+button{width:100%;padding:14px;border:none;border-radius:99px;background:linear-gradient(90deg,#FF0000,#B30000);color:#fff;font-weight:900;font-size:16px;cursor:pointer;margin-top:8px;animation:pulseGlow 2s infinite;transition:all .25s ease;letter-spacing:1px}
+button:hover{transform:translateY(-2px) scale(1.01);filter:brightness(1.15)}
+button:active{transform:scale(.96)}
+button.ghost{background:#1A1A1A;color:#fff;border:1px solid #333;box-shadow:none;animation:none}
+button.ghost:hover{background:#222;border-color:#FF0000}
+.bar{height:12px;background:#222;border-radius:99px;overflow:hidden;transition:all .3s ease}
+.fill{height:100%;background:linear-gradient(90deg,#FF0000,#FF4D4D);width:0%;transition:width .8s cubic-bezier(.4,0,.2,1), filter .3s ease;animation:xpGlow 1.5s infinite}
+.task{display:flex;gap:10px;align-items:flex-start;background:#1A1A1A;border:1px solid #2A2A2A;padding:12px;border-radius:14px;margin:8px 0;animation:floatIn .4s ease both;transition:all .3s ease;cursor:pointer}
+.task:hover{transform:translateX(4px);border-color:#FF0000;background:#222}
+.task:active{transform:scale(.98)}
+.task.done{opacity:.6;border-color:#FF0000;transition:all .4s ease}
+.task input{width:20px;height:20px;accent-color:#FF0000;transition:transform .2s ease}
+.task input:checked{transform:scale(1.2)}
+.badge{display:inline-block;background:#FF0000;color:#fff;padding:6px 12px;border-radius:99px;font-weight:900;font-size:12px;box-shadow:0 4px 15px rgba(255,0,0,.5);animation:wiggle 3s infinite;transition:all .3s ease}
+.badge:hover{transform:scale(1.1)}
+.quote{font-style:italic;color:#FF4D4D;font-size:16px;line-height:1.5;transition:opacity .4s ease}
+.small{font-size:12px;color:#888}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:#1A1A1A;padding:12px;border-radius:14px;text-align:center;border:1px solid #2A2A2A;transition:all .3s ease;cursor:pointer}
+.stat:hover{transform:translateY(-4px) scale(1.03);border-color:#FF0000;box-shadow:0 8px 20px rgba(255,0,0,.3)}
+.stat b{font-size:22px;color:#FF0000;transition:color .3s ease}
+.hidden{display:none}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#000;display:flex;border-top:1px solid #2A0000;padding:10px;animation:slideUpNav .5s ease}
+.nav div{flex:1;text-align:center;font-size:12px;color:#777;cursor:pointer;padding:8px;transition:all .3s ease;border-radius:12px;position:relative}
+.nav div:hover{color:#fff;transform:translateY(-2px)}
+.nav div.active{color:#FF0000;font-weight:900;transform:scale(1.1);background:rgba(255,0,0,.1)}
+.nav div.active::after{content:"";position:absolute;bottom:-2px;left:30%;right:30%;height:3px;background:#FF0000;border-radius:99px;transition:all .3s ease}
+.pie{width:180px;height:180px;border-radius:50%;background:#222;border:3px solid #FF0000;box-shadow:0 0 25px rgba(255,0,0,.5);transition:background 1s ease, transform .5s ease}
+.pie:hover{transform:scale(1.05) rotate(2deg)}
+.pie-legend-item{display:flex;justify-content:space-between;padding:8px 10px;background:#1A1A1A;border-radius:10px;margin:5px 0;border-left:4px solid #FF0000;transition:all .3s ease}
+.pie-legend-item:hover{transform:translateX(5px);background:#222}
+.pie-dot{width:12px;height:12px;border-radius:50%;display:inline-block;margin-right:6px;transition:transform .3s ease}
+.advice-box{background:linear-gradient(90deg,#1A0000,#2B0000);border:1px solid #FF0000;padding:12px;border-radius:14px;color:#fff;line-height:1.5;transition:all .3s ease}
+.water-bar-wrap{height:14px;background:#222;border-radius:99px;overflow:hidden;margin:8px 0}
+.weight-bars{display:flex;align-items:flex-end;gap:8px;height:140px;padding:10px;background:#1A1A1A;border-radius:14px;border:1px solid #2A2A2A;overflow-x:auto}
+.weight-bar-col{flex:1;min-width:42px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.weight-bar{width:100%;max-width:38px;background:linear-gradient(180deg,#FF0000,#B30000);border-radius:8px 8px 0 0;transition:height .8s cubic-bezier(.4,0,.2,1);display:flex;align-items:flex-start;justify-content:center;color:#fff;font-size:10px;font-weight:900;padding-top:4px}
+.weight-bar-label{font-size:11px;color:#888;margin-top:6px}
+#profileAvatar{box-shadow:0 0 0 3px #2A2A2A, 0 8px 24px rgba(255,0,0,.35);transition:transform .3s ease}
+#profileAvatar:active{transform:scale(1.05)}
+.pic-btn{display:inline-block;margin-top:10px;background:#1A1A1A;color:#fff;border:1px solid #333;padding:10px 16px;border-radius:99px;font-size:13px;cursor:pointer}
+.pic-btn:active{transform:scale(.96)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+.cal-day{background:#1A1A1A;border:1px solid #2A2A2A;border-radius:12px;padding:8px 2px;text-align:center;font-size:11px;transition:all .3s ease;cursor:pointer}
+.cal-day:hover{border-color:#FF0000;transform:translateY(-2px)}
+.cal-day:active{transform:scale(.92)}
+.cal-day.done{background:linear-gradient(180deg,#FF0000,#B30000);border-color:#FF0000;color:#fff;font-weight:900;box-shadow:0 4px 15px rgba(255,0,0,.4);animation:badgePop .4s ease}
+.cal-day.today{border-color:#FF0000}
+.badge-item{display:flex;gap:10px;align-items:center;background:#1A1A1A;border:1px solid #2A2A2A;padding:10px;border-radius:14px;margin:6px 0;transition:all .3s ease}
+.badge-item.unlocked{border-color:#FF0000;background:linear-gradient(90deg,#1A0000,#2B0000);animation:badgePop .4s ease}
+.badge-item.locked{opacity:.45}
+.badge-emoji{font-size:24px}
+</style>
+</head>
+<body>
+
+<div class="top"><div class="logo">>> Flow<span>Up</span> <<</div><div><span class="badge" id="levelBadge">LVL 1</span></div></div>
+
+<div id="page-setup">
+  <div class="card">
+    <h2>>> What's your goal? <<</h2>
+    <p>Welcome to FlowUp. Discipline over motivation. Consistency over intensity.</p>
+    <input id="inpName" placeholder="Your name">
+    <div class="grid"><input id="inpAge" type="number" placeholder="Age"><input id="inpWeight" type="number" placeholder="Weight kg"></div>
+    <input id="inpHeight" type="number" placeholder="Height cm">
+    <input id="inpGoal" placeholder="e.g. Be taller, Pass exams, Get rich, Be disciplined">
+    <p class="small">Try: Be Taller / Lose Weight / Gain Muscle / Clear Skin / Be Confident / Sleep Better / Be Disciplined / Pass Exams / Get Rich / Be Healthy</p>
+    <button onclick="startApp()">GENERATE MY PLAN</button>
+  </div>
+  <div class="card"><div class="quote">>> You don't need a perfect day. You need a day in which you make progress. <<</div></div>
+</div>
+
+<div id="page-home" class="hidden">
+  <div class="card">
+    <div style="display:flex;justify-content:space-between"><span>Hi, <b id="showName">Creator</b></span><span id="showGoal" style="color:#FF4D4D"></span></div>
+    <h2>Level <span id="lvlNum">1</span> - <span id="lvlTitle">Beginner</span></h2>
+    <div class="bar"><div class="fill" id="xpBar"></div></div>
+    <p><span id="xpText">0 XP</span> - Next level in <span id="xpLeft"></span> XP - <span id="taskDone">0</span>/<span id="taskTotal">5</span> tasks done</p>
+    <div class="grid"><div class="stat"><b id="statSleep">0h</b><br><span class="small">Sleep Last Night</span></div><div class="stat"><b id="statStreak">0</b><br><span class="small">Day Streak</span></div></div>
+    <div class="grid" style="margin-top:10px"><div class="stat"><b id="statWater">0L</b><br><span class="small">Water Today</span></div><div class="stat"><b id="statWeight">-</b><br><span class="small">Current Weight</span></div></div>
+  </div>
+  <div class="card">
+    <h2>>> Today's Tasks - <span id="taskHead">5</span> Tasks <<</h2>
+    <p id="planExplain"></p>
+    <div id="taskList"></div>
+    <button onclick="completeDay()">COMPLETE DAY + CLAIM BONUS</button>
+    <button class="ghost" onclick="newGoal()">Change Goal</button>
+    <button class="ghost" style="color:#FF6B6B;border-color:#552222" onclick="resetAll()">Reset All Data</button>
+  </div>
+  <div class="card">
+    <h2>>> Streak Calendar 🔥 <<</h2>
+    <p>Tap any day to see what happened. Red = you completed that day.</p>
+    <div id="streakCalendar" class="cal-grid"></div>
+    <p id="streakInfo" style="margin-top:10px"></p>
+  </div>
+  <div class="card">
+    <h2>>> My Badges 🏆 <<</h2>
+    <p><span id="badgeCount">0</span>/8 unlocked</p>
+    <div id="badgeList"></div>
+  </div>
+  <div class="card"><h2>>> Coach Says <<</h2><div class="quote" id="coachQuote"></div><button class="ghost" onclick="newQuote()">New Quote</button></div>
+</div>
+
+<div id="page-sleep" class="hidden">
+  <div class="card"><h2>>> Sleep Tracker <<</h2><label class="small">Slept at</label><input id="sleepFrom" type="time" value="22:00"><label class="small">Woke at</label><input id="sleepTo" type="time" value="06:00"><button onclick="logSleep()">LOG SLEEP</button><div id="sleepResult" style="margin-top:12px"></div></div>
+  <div class="card"><h2>>> Sleep Pie - S1 vs S2 vs S3 <<</h2><p>Each slice = one night. Bigger slice = more sleep.</p><div style="display:flex;justify-content:center"><div id="sleepPie" class="pie"></div></div><div id="pieLegend" style="margin-top:12px"></div><div id="sleepAdvice" style="margin-top:12px"></div></div>
+  <div class="card"><h2>>> History <<</h2><div id="sleepHistory"></div></div>
+</div>
+
+<div id="page-tracker" class="hidden">
+  <div class="card"><h2>>> Water Tracker <<</h2><p>Goal: 3.0L per day. Log every glass.</p><div class="grid"><div class="stat"><b id="waterToday">0L</b><br><span class="small">Today</span></div><div class="stat"><b id="waterTotal">0L</b><br><span class="small">Total Logged</span></div></div><div class="bar" style="margin-top:12px"><div class="fill" id="waterBar"></div></div><p id="waterPct">0% of daily goal</p><label class="small">Add water (Litres)</label><input id="waterInput" type="number" step="0.1" placeholder="e.g. 0.5" value="0.5"><button onclick="logWater()">LOG WATER</button><div id="waterResult" style="margin-top:12px"></div><div id="waterHistory" style="margin-top:12px"></div></div>
+  <div class="card"><h2>>> Weight Tracker <<</h2><p>Log your weight. Watch the bars move over time.</p><div class="grid"><div class="stat"><b id="weightCurrent">-</b><br><span class="small">Current</span></div><div class="stat"><b id="weightChange">-</b><br><span class="small">Change Since W1</span></div></div><div id="weightBars" style="margin-top:14px"></div><div id="weightAdvice" style="margin-top:12px"></div><label class="small">Log weight (kg)</label><input id="weightInput" type="number" step="0.1" placeholder="e.g. 62.5"><button onclick="logWeight()">LOG WEIGHT</button><div id="weightHistory" style="margin-top:12px"></div></div>
+</div>
+
+<div id="page-profile" class="hidden">
+  <div class="card">
+    <h2>>> My Profile <<</h2>
+    <div style="text-align:center;padding:10px 0">
+      <img id="profileAvatar" src="" alt="F" style="width:72px;height:72px;border-radius:50%;object-fit:cover;background:linear-gradient(180deg,#FF0000,#5A0000);display:block;font-size:32px;font-weight:900;margin:0 auto;text-align:center;line-height:72px">
+      <h2 id="profileName" style="margin:10px 0 2px">Creator</h2>
+      <p id="profileLevel" style="color:#FF4D4D;margin:0">Level 1 - Beginner</p>
+      <p id="profileGoal" style="margin:6px 0 0;color:#aaa"></p>
+      <label class="pic-btn">📸 CHANGE PROFILE PIC<input type="file" accept="image/*" onchange="changePic(event)" style="display:none"></label>
+      <br>
+      <button class="ghost" onclick="removePic()" style="margin-top:8px">Remove Pic</button>
+    </div>
+    <div class="grid"><div class="stat"><b id="profileAge">-</b><br><span class="small">Age</span></div><div class="stat"><b id="profileHeight">-</b><br><span class="small">Height</span></div></div>
+    <div class="grid" style="margin-top:10px"><div class="stat"><b id="profileWeight">-</b><br><span class="small">Weight</span></div><div class="stat"><b id="profileXP">0 XP</b><br><span class="small">Total XP</span></div></div>
+    <div class="grid" style="margin-top:10px"><div class="stat"><b id="profileStreak">0</b><br><span class="small">Day Streak</span></div><div class="stat"><b id="profileSleepAvg">-</b><br><span class="small">Avg Sleep</span></div></div>
+    <div class="grid" style="margin-top:10px"><div class="stat"><b id="profileWaterTotal">0L</b><br><span class="small">Water Total</span></div><div class="stat"><b id="profileNights">0</b><br><span class="small">Nights Logged</span></div></div>
+    <div style="margin-top:12px"><h2>>> Badges 🏆 <<</h2><div id="profileBadgeList"></div></div>
+  </div>
+  <div class="card">
+    <h2>>> Edit Profile <<</h2>
+    <label class="small">Name</label><input id="editName" placeholder="Your name">
+    <div class="grid"><div><label class="small">Age</label><input id="editAge" type="number" placeholder="Age"></div><div><label class="small">Height cm</label><input id="editHeight" type="number" placeholder="Height cm"></div></div>
+    <label class="small">Goal</label><input id="editGoal" placeholder="Your goal">
+    <button onclick="saveProfile()">SAVE PROFILE</button>
+    <div id="profileSaved" style="margin-top:10px"></div>
+    <button class="ghost" onclick="showPage('home')">Back to Home</button>
+  </div>
+</div>
+
+<div id="page-book" class="hidden">
+  <div class="card"><h2>>> Playbook - FlowUp Rules <<</h2><p>700 Rules System: Discipline, Sleep, Diet, Body, Mindset, Focus, Habits. Search by goal or topic.</p><input id="searchBook" placeholder="Search: sleep, discipline, exam, money, skin..." oninput="renderBook()"></div>
+  <div id="bookList"></div>
+</div>
+
+<div class="nav">
+  <div id="nav-home" class="active" onclick="showPage('home')">Home</div>
+  <div id="nav-sleep" onclick="showPage('sleep')">Sleep</div>
+  <div id="nav-tracker" onclick="showPage('tracker')">Tracker</div>
+  <div id="nav-profile" onclick="showPage('profile')">Profile</div>
+  <div id="nav-book" onclick="showPage('book')">Playbook</div>
+</div>
+
+<script>
+var S={name:"",age:"",weight:"",height:"",goal:"",pic:"",xp:0,totalXp:0,level:1,streak:0,streakDates:[],badges:[],tasks:[],done:[],sleepLog:[],sleepHours:0,waterLog:[],waterToday:0,weightLog:[],dayDoneDate:""};
+var Q=["Discipline beats motivation.","Progress over perfection.","Sleep is when you grow."];
+var B=[{t:"DISCIPLINE",d:"Do 1 task before entertainment."},{t:"SLEEP",d:"8-10h sleep. Phone away 1h before bed."},{t:"DIET & WATER",d:"Balanced meal + 2-3L water. No soda."},{t:"BODY",d:"20 min movement daily."},{t:"FOCUS",d:"Write 3 priorities. 1 focus session."},{t:"10 COMMANDMENTS",d:"Motivation fades. Discipline stays. Protect time, sleep, body, attention. Finish what you start."}];
+var BG=[{id:"first",e:"🌱",n:"First Step",d:"1 day"},{id:"streak3",e:"🔥",n:"On Fire",d:"3 streak"},{id:"streak7",e:"🔥🔥",n:"Week Warrior",d:"7 streak"},{id:"xp500",e:"⭐",n:"500 XP",d:"500 XP"},{id:"level5",e:"👑",n:"Beast",d:"Level 5"}];
+function sv(){try{localStorage.setItem("flowup_v1",JSON.stringify(S))}catch(e){}}
+function ld(){try{var r=localStorage.getItem("flowup_v1");if(!r)return false;S=JSON.parse(r);S.waterLog=S.waterLog||[];S.weightLog=S.weightLog||[];S.sleepLog=S.sleepLog||[];S.tasks=S.tasks||[];S.done=S.done||[];S.pic=S.pic||"";S.streakDates=S.streakDates||[];S.badges=S.badges||[];S.totalXp=S.totalXp||S.xp||0;S.dayDoneDate=S.dayDoneDate||"";return true}catch(e){return false}}
+function resetAll(){if(!confirm("Reset?"))return;localStorage.removeItem("flowup_v1");location.reload()}
+function el(id){return document.getElementById(id)}
+function restoreUI(){if(S.goal){el("showName").textContent=S.name||"Creator";el("showGoal").textContent=S.goal;doShow("home");renderHome();renderTracker();renderProfile()}else doShow("setup")}
+function showPage(p){if(p==="setup"){doShow("setup");return}var c=document.querySelector("#page-setup:not(.hidden), #page-home:not(.hidden), #page-sleep:not(.hidden), #page-tracker:not(.hidden), #page-profile:not(.hidden), #page-book:not(.hidden)");if(c){c.classList.add("page-exit");setTimeout(function(){c.classList.add("hidden");c.classList.remove("page-exit");doShow(p)},150)}else doShow(p)}
+function doShow(p){if(p==="setup"){el("page-setup").classList.remove("hidden");["home","sleep","tracker","profile","book"].forEach(function(x){el("page-"+x).classList.add("hidden")});return}el("page-setup").classList.add("hidden");["home","sleep","tracker","profile","book"].forEach(function(x){el("page-"+x).classList.toggle("hidden",x!==p)});["home","sleep","tracker","profile","book"].forEach(function(x){el("nav-"+x).classList.toggle("active",x===p)});if(p==="sleep")renderSleep();if(p==="tracker")renderTracker();if(p==="profile")renderProfile();if(p==="book")renderBook()}
+function lvlT(l){return l>=10?"Legend":l>=7?"Elite":l>=5?"Beast":l>=3?"Rising":"Beginner"}
+function taskCount(){return S.level>=10?10:S.level>=7?8:S.level>=5?7:S.level>=3?6:5}
+function makeTasks(g0){var g=(g0||"").toLowerCase();var b=[];var X=["Write tomorrow's 3 priorities","Make bed + tidy room","10 min stretching","Read / learn 10 min","No soda / sugar"];
+if(g.indexOf("tall")>-1||g.indexOf("grow")>-1||g.indexOf("height")>-1)b=["Sleep 8-10h","Balanced meal + protein","20 min: hanging + stretching","Drink 2-3L water","No phone 1h before bed"];
+else if(g.indexOf("lose")>-1||g.indexOf("fat")>-1||g.indexOf("slim")>-1)b=["Balanced meal, no soda","20 min walk","Drink 3L water","Sleep 8h","No late snack"];
+else if(g.indexOf("muscle")>-1||g.indexOf("strong")>-1||g.indexOf("gym")>-1||g.indexOf("gain")>-1)b=["30 pushups","Protein meal","Drink 2.5L water","20 min strength","Sleep 8h+"];
+else if(g.indexOf("skin")>-1||g.indexOf("clear")>-1||g.indexOf("acne")>-1||g.indexOf("face")>-1)b=["Wash face AM + PM","Drink 2-3L water","Balanced meal, no soda","Sleep 8h","Clean pillowcase"];
+else if(g.indexOf("confident")>-1||g.indexOf("confidence")>-1||g.indexOf("shy")>-1)b=["Keep 1 promise to yourself","1 conversation, eye contact","20 min on 1 skill","Make bed","Record 1 win"];
+else if(g.indexOf("sleep")>-1||g.indexOf("tired")>-1)b=["Bed on time 8-10h","Phone away before bed","Bedtime routine","No caffeine PM","Morning light 10 min"];
+else if(g.indexOf("discipline")>-1||g.indexOf("lazy")>-1||g.indexOf("procrastinat")>-1)b=["1 task BEFORE fun","Start in 5 min","20 min no socials AM","Make bed","Write tomorrow's plan"];
+else if(g.indexOf("exam")>-1||g.indexOf("study")>-1||g.indexOf("school")>-1)b=["45 min focus - no phone","Test yourself","10 practice Qs","Review in evening","Sleep 8h"];
+else if(g.indexOf("rich")>-1||g.indexOf("money")>-1||g.indexOf("business")>-1)b=["Learn skill 20 min","Record purchases","Learn money 15 min","1 goal task","No impulse buy"];
+else if(g.indexOf("healthy")>-1||g.indexOf("health")>-1||g.indexOf("fit")>-1)b=["Balanced meal + fruit","20 min movement","Drink 2-3L water","Sleep 8h","Tidy room 10 min"];
+else if(g.indexOf("focus")>-1||g.indexOf("productive")>-1)b=["Write 3 priorities","25-min focus","Hardest first","Silence notifications","Review evening"];
+else b=["1 task before fun","Drink 2L water","20 min movement","Balanced meal + fruit","Sleep 8h"];
+return b.concat(X).slice(0,taskCount()).map(function(t,i){return{id:i,text:t}})}
+function startApp(){var n=el("inpName").value.trim();var g=el("inpGoal").value.trim();if(!g){alert("Type goal");return}S.name=n||"Creator";S.age=el("inpAge").value;S.weight=el("inpWeight").value;S.height=el("inpHeight").value;S.goal=g;S.xp=0;S.totalXp=0;S.level=1;S.streak=0;S.streakDates=[];S.badges=[];S.done=[];S.dayDoneDate="";S.sleepLog=[];S.sleepHours=0;S.waterLog=[];S.waterToday=0;S.weightLog=[];S.tasks=makeTasks(g);if(S.weight)S.weightLog=[{date:new Date().toLocaleDateString(),kg:parseFloat(S.weight)}];el("showName").textContent=S.name;el("showGoal").textContent=g;sv();doShow("home");renderHome();newQuote();renderBook();renderTracker();renderProfile()}
+function renderHome(){var today=new Date().toLocaleDateString();if(S.dayDoneDate&&S.dayDoneDate!==today){S.dayDoneDate="";S.done=[];S.tasks=makeTasks(S.goal);sv()}var need=S.level*100;el("xpBar").style.width=Math.min(100,S.xp/need*100)+"%";el("xpText").textContent=S.xp+" XP";el("xpLeft").textContent=Math.max(0,need-S.xp);el("lvlNum").textContent=S.level;el("lvlTitle").textContent=lvlT(S.level);el("levelBadge").textContent="LVL "+S.level;el("statSleep").textContent=S.sleepHours+"h";el("statStreak").textContent=S.streak;el("statWater").textContent=(S.waterToday||0).toFixed(1)+"L";var lw=S.weightLog.length?S.weightLog[S.weightLog.length-1].kg:"-";el("statWeight").textContent=lw==="-"?"-":lw+"kg";el("taskDone").textContent=S.done.length;if(el("taskTotal"))el("taskTotal").textContent=S.tasks.length;if(el("taskHead"))el("taskHead").textContent=S.tasks.length;var isDone=S.dayDoneDate===today;var bn=el("planExplain");if(isDone&&bn)bn.textContent="✅ Task completed Until tomorrow! 🔥 Streak: "+S.streak;else if(bn&&S.goal)bn.textContent="Plan: "+S.goal+" - Lvl "+S.level+" = "+taskCount()+" tasks. +20 XP each. +50 XP day.";var l=el("taskList");l.innerHTML="";S.tasks.forEach(function(t){var ch=S.done.indexOf(t.id)>-1?"checked":"";var cl=S.done.indexOf(t.id)>-1?"task done":"task";var dis=isDone?"disabled":"";l.innerHTML+="<label class='"+cl+"'><input type='checkbox' "+ch+" "+dis+" onchange='toggleTask("+t.id+")'><span>"+t.text+" <b style='color:#FF4D4D'>+20 XP</b></span></label>"});renderCal();renderBadges()}
+function toggleTask(id){if(S.dayDoneDate===new Date().toLocaleDateString()){alert("✅ Task completed Until tomorrow!");return}if(S.done.indexOf(id)>-1){S.done=S.done.filter(function(x){return x!==id});S.xp=Math.max(0,S.xp-20);S.totalXp=Math.max(0,S.totalXp-20)}else{S.done.push(id);S.xp+=20;S.totalXp+=20;checkLevel()}sv();renderHome();checkBadges()}
+function checkLevel(){var need=S.level*100;if(S.xp>=need){S.level++;S.xp-=need;alert("LEVEL UP - Level "+S.level+" - "+lvlT(S.level));S.tasks=makeTasks(S.goal);S.done=[];S.dayDoneDate="";sv()}}
+function completeDay(){if(S.dayDoneDate===new Date().toLocaleDateString()){alert("✅ Task completed Until tomorrow!");return}if(S.done.length<S.tasks.length){alert("Finish all. "+S.done.length+"/"+S.tasks.length);return}S.xp+=50;S.totalXp+=50;S.streak++;checkLevel();var t=new Date().toLocaleDateString();if(S.streakDates.indexOf(t)===-1)S.streakDates.push(t);S.dayDoneDate=t;sv();checkBadges();alert("✅ Task completed Until tomorrow!");renderHome()}
+function newGoal(){doShow("setup")}
+function newQuote(){var e=el("coachQuote");if(e)e.textContent=Q[Math.floor(Math.random()*Q.length)]}
+function logSleep(){var f=el("sleepFrom").value;var t=el("sleepTo").value;if(!f||!t){alert("Pick both");return}var a=f.split(":");var b=t.split(":");var m=(parseInt(b[0])*60+parseInt(b[1]))-(parseInt(a[0])*60+parseInt(a[1]));if(m<=0)m+=1440;var h=(m/60).toFixed(1);S.sleepHours=parseFloat(h);S.sleepLog.push({date:new Date().toLocaleDateString(),from:f,to:t,hours:h});el("sleepResult").innerHTML="<div class='advice-box'>Slept <b>"+h+"h</b></div>";sv();renderSleep();renderHome();checkBadges()}
+function renderSleep(){var h=el("sleepHistory");h.innerHTML=!S.sleepLog.length?"<p>No sleep yet.</p>":S.sleepLog.map(function(s,i){return "<div class='pie-legend-item'><span>S"+(i+1)+" - "+s.date+"</span><b>"+s.hours+"h</b></div>"}).join("");renderPie()}
+function renderPie(){var pie=el("sleepPie");if(!pie)return;if(!S.sleepLog.length){pie.style.background="#222";return}var tot=0;S.sleepLog.forEach(function(x){tot+=parseFloat(x.hours)});var st=0;var p=[];S.sleepLog.forEach(function(s,j){var pc=parseFloat(s.hours)/tot*100;var col=["#FF0000","#FF4D4D","#FF8A00","#FFC75F","#FF6EC4","#B30000"][j%6];var en=st+pc/100*360;p.push(col+" "+st.toFixed(1)+"deg "+en.toFixed(1)+"deg");st=en});pie.style.background="conic-gradient("+p.join(",")+")";var lg=el("pieLegend");if(lg)lg.innerHTML=S.sleepLog.map(function(s,j){return "<div class='pie-legend-item'><span>S"+(j+1)+" - "+s.date+"</span><b>"+s.hours+"h</b></div>"}).join("")}
+function logWater(){var v=parseFloat(el("waterInput").value);if(!v){alert("Enter litres");return}S.waterToday=(S.waterToday||0)+v;S.waterLog.push({date:new Date().toLocaleDateString(),litres:v});el("waterResult").innerHTML="<div class='advice-box'>Logged <b>"+v.toFixed(1)+"L</b>. Today: "+S.waterToday.toFixed(1)+"L</div>";sv();renderTracker();renderHome();checkBadges()}
+function logWeight(){var v=parseFloat(el("weightInput").value);if(!v){alert("Enter weight");return}S.weightLog.push({date:new Date().toLocaleDateString(),kg:v});S.weight=v;sv();renderTracker();renderHome();renderProfile()}
+function renderTracker(){var tw=0;S.waterLog.forEach(function(x){tw+=x.litres});if(el("waterToday"))el("waterToday").textContent=(S.waterToday||0).toFixed(1)+"L";if(el("waterTotal"))el("waterTotal").textContent=tw.toFixed(1)+"L";if(el("waterBar"))el("waterBar").style.width=Math.min(100,S.waterToday/3*100)+"%";if(el("waterPct"))el("waterPct").textContent=Math.min(100,Math.round(S.waterToday/3*100))+"% of 3L";if(el("waterHistory"))el("waterHistory").innerHTML=S.waterLog.length?S.waterLog.slice(-5).reverse().map(function(w){return "<div class='pie-legend-item'><span>"+w.date+"</span><b>"+w.litres.toFixed(1)+"L</b></div>"}).join(""):"<p>No water.</p>";if(!S.weightLog.length){if(el("weightCurrent"))el("weightCurrent").textContent="-";if(el("weightBars"))el("weightBars").innerHTML="<p>No weight.</p>";return}var last=S.weightLog[S.weightLog.length-1].kg;var first=S.weightLog[0].kg;if(el("weightCurrent"))el("weightCurrent").textContent=last.toFixed(1)+"kg";if(el("weightChange"))el("weightChange").textContent=(last-first>=0?"+":"")+(last-first).toFixed(1)+"kg";if(el("weightBars"))el("weightBars").innerHTML=S.weightLog.map(function(w,i){return "<div class='pie-legend-item'><span>W"+(i+1)+" - "+w.date+"</span><b>"+w.kg.toFixed(1)+"kg</b></div>"}).join("")}
+function renderProfile(){var n=S.name||"Creator";var av=el("profileAvatar");if(av){if(S.pic){av.src=S.pic;av.textContent=""}else{av.removeAttribute("src");av.textContent=n.charAt(0).toUpperCase()}}if(el("profileName"))el("profileName").textContent=n;if(el("profileLevel"))el("profileLevel").textContent="Level "+S.level+" - "+lvlT(S.level);if(el("profileGoal"))el("profileGoal").textContent=S.goal?("Goal: "+S.goal):"";if(el("profileAge"))el("profileAge").textContent=S.age?S.age+" yrs":"-";if(el("profileHeight"))el("profileHeight").textContent=S.height?S.height+" cm":"-";var lw=S.weightLog.length?S.weightLog[S.weightLog.length-1].kg:(S.weight?parseFloat(S.weight):null);if(el("profileWeight"))el("profileWeight").textContent=lw?lw.toFixed(1)+" kg":"-";if(el("profileXP"))el("profileXP").textContent=S.xp+" XP";if(el("profileStreak"))el("profileStreak").textContent=S.streak+" days";if(el("editName"))el("editName").value=S.name||"";if(el("editAge"))el("editAge").value=S.age||"";if(el("editHeight"))el("editHeight").value=S.height||"";if(el("editGoal"))el("editGoal").value=S.goal||"";renderBadges()}
+function saveProfile(){var nn=el("editName").value.trim();var na=el("editAge").value;var nh=el("editHeight").value;var ng=el("editGoal").value.trim();if(nn)S.name=nn;if(na)S.age=na;if(nh)S.height=nh;if(ng){S.goal=ng;S.tasks=makeTasks(ng);S.done=[];S.dayDoneDate="";el("showName").textContent=S.name;el("showGoal").textContent=ng}sv();el("profileSaved").innerHTML="<div class='advice-box'>Saved.</div>";renderProfile();renderHome()}
+function renderBook(){var q=(el("searchBook")?el("searchBook").value:"").toLowerCase();var l=el("bookList");if(!l)return;var f=B.filter(function(b){return b.t.toLowerCase().indexOf(q)>-1||b.d.toLowerCase().indexOf(q)>-1});l.innerHTML=f.map(function(b){return "<div class='card'><h2>>> "+b.t+" <<</h2><p>"+b.d+"</p></div>"}).join("")||"<p>No results.</p>"}
+function changePic(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(){var img=new Image();img.onload=function(){var c=document.createElement("canvas");var mx=300,w=img.width,h=img.height;if(w>mx){h=h*mx/w;w=mx}c.width=w;c.height=h;c.getContext("2d").drawImage(img,0,0,w,h);S.pic=c.toDataURL("image/jpeg",0.7);sv();renderProfile()};img.src=r.result};r.readAsDataURL(f)}
+function removePic(){S.pic="";sv();renderProfile()}
+function renderCal(){var e=el("streakCalendar");if(!e)return;var td=new Date();var h="";for(var i=13;i>=0;i--){var d=new Date(td);d.setDate(td.getDate()-i);var ds=d.toLocaleDateString();var dn=S.streakDates.indexOf(ds)>-1;h+="<div class='cal-day "+(dn?"done":"")+"'>"+d.getDate()+(dn?"<br>🔥":"<br>○")+"</div>"}e.innerHTML=h;var inf=el("streakInfo");if(inf)inf.innerHTML="🔥 <b>"+S.streak+" streak</b> | "+S.streakDates.length+" days done."}
+function tapDay(ds,dn){alert(dn?"✅ "+ds+" Done!":ds+" Not done.")}
+function checkBadges(){var u=[];if(S.streakDates.length>=1&&S.badges.indexOf("first")===-1)u.push("first");if(S.streak>=3&&S.badges.indexOf("streak3")===-1)u.push("streak3");if(S.streak>=7&&S.badges.indexOf("streak7")===-1)u.push("streak7");if(S.totalXp>=500&&S.badges.indexOf("xp500")===-1)u.push("xp500");if(S.level>=5&&S.badges.indexOf("level5")===-1)u.push("level5");if(!u.length)return;u.forEach(function(id){S.badges.push(id)});sv();renderBadges()}
+function renderBadges(){var h=BG.map(function(b){var has=S.badges.indexOf(b.id)>-1;return "<div class='badge-item "+(has?"unlocked":"locked")+"'><span>"+(has?b.e:"🔒")+"</span><div><b>"+b.n+"</b> <span class='small'>"+b.d+"</span></div><span>"+(has?"✅":"")+"</span></div>"}).join("");if(el("badgeList"))el("badgeList").innerHTML=h;if(el("profileBadgeList"))el("profileBadgeList").innerHTML=h;if(el("badgeCount"))el("badgeCount").textContent=S.badges.length}
+ld();restoreUI();renderBook();newQuote();
+</script>
+</body>
+</html>
